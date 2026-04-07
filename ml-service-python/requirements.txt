@@ -2,7 +2,7 @@ fastapi==0.115.0
 uvicorn[standard]==0.30.6
 pydantic==2.9.2
 numpy==2.1.2
-xgboost==2.1.1
+xgboost==2.0.3
 scikit-learn==1.5.2
 pystac-client==0.8.3
 planetary-computer==1.0.0

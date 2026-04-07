@@ -2,6 +2,9 @@ FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PIP_DEFAULT_TIMEOUT=180
+ENV PIP_RETRIES=12
 
 WORKDIR /app
 
@@ -12,7 +15,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN set -eux; \
+        for attempt in 1 2 3; do \
+            pip install --no-cache-dir -r /app/requirements.txt && break; \
+            echo "pip install failed on attempt ${attempt}; retrying..."; \
+            if [ "${attempt}" -eq 3 ]; then exit 1; fi; \
+            sleep $((attempt * 15)); \
+        done
 
 COPY app /app/app
 COPY tests /app/tests
