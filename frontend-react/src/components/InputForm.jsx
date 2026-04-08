@@ -13,7 +13,7 @@ function parseOptionalNumber(value) {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-export default function InputForm({ onSubmit, loading, form, onFormChange }) {
+export default function InputForm({ onSubmit, loading, form, onFormChange, onReset }) {
   const currentForm = {
     ...defaultState,
     ...(form || {}),
@@ -40,77 +40,94 @@ export default function InputForm({ onSubmit, loading, form, onFormChange }) {
 
   return (
     <form className="card input-form" onSubmit={handleSubmit}>
-      <h2>Land Risk Input</h2>
+      <div className="section-head">
+        <div>
+          <p className="section-kicker">Input</p>
+          <h2>Land Risk Input</h2>
+        </div>
+      </div>
       <p className="muted">Provide either lat/lon or survey + village inputs.</p>
+      <p className="field-note">Coordinates can be auto-filled by clicking the map panel.</p>
 
-      <div className="grid two">
+      <fieldset className="form-fields" disabled={loading}>
+        <div className="grid two">
+          <label>
+            Latitude
+            <input
+              type="number"
+              step="any"
+              min="-90"
+              max="90"
+              value={currentForm.latitude}
+              onChange={(e) => setValue("latitude", e.target.value)}
+              placeholder="12.9716"
+            />
+          </label>
+          <label>
+            Longitude
+            <input
+              type="number"
+              step="any"
+              min="-180"
+              max="180"
+              value={currentForm.longitude}
+              onChange={(e) => setValue("longitude", e.target.value)}
+              placeholder="77.5946"
+            />
+          </label>
+        </div>
+
+        <div className="grid three">
+          <label>
+            Survey Number
+            <input
+              type="text"
+              value={currentForm.surveyNumber}
+              onChange={(e) => setValue("surveyNumber", e.target.value)}
+              placeholder="12/3"
+            />
+          </label>
+          <label>
+            Village ID
+            <input
+              type="text"
+              value={currentForm.villageId}
+              onChange={(e) => setValue("villageId", e.target.value)}
+              placeholder="301001"
+            />
+          </label>
+          <label>
+            Pincode
+            <input
+              type="text"
+              value={currentForm.pincode}
+              onChange={(e) => setValue("pincode", e.target.value)}
+              placeholder="560001"
+            />
+          </label>
+        </div>
+
         <label>
-          Latitude
-          <input
-            type="number"
-            step="any"
-            value={currentForm.latitude}
-            onChange={(e) => setValue("latitude", e.target.value)}
-            placeholder="12.9716"
-          />
+          Survey Type
+          <select
+            value={currentForm.surveyType}
+            onChange={(e) => setValue("surveyType", e.target.value)}
+          >
+            <option value="parcel">Parcel</option>
+            <option value="plot">Plot</option>
+            <option value="land">Land</option>
+          </select>
         </label>
-        <label>
-          Longitude
-          <input
-            type="number"
-            step="any"
-            value={currentForm.longitude}
-            onChange={(e) => setValue("longitude", e.target.value)}
-            placeholder="77.5946"
-          />
-        </label>
+      </fieldset>
+
+      <div className="actions form-actions">
+        <button type="submit" disabled={loading}>
+          {loading ? "Running Assessment..." : "Run Risk Assessment"}
+        </button>
+        <button type="button" className="btn-secondary" disabled={loading} onClick={onReset}>
+          Reset Inputs
+        </button>
       </div>
-
-      <div className="grid three">
-        <label>
-          Survey Number
-          <input
-            type="text"
-            value={currentForm.surveyNumber}
-            onChange={(e) => setValue("surveyNumber", e.target.value)}
-            placeholder="12/3"
-          />
-        </label>
-        <label>
-          Village ID
-          <input
-            type="text"
-            value={currentForm.villageId}
-            onChange={(e) => setValue("villageId", e.target.value)}
-            placeholder="301001"
-          />
-        </label>
-        <label>
-          Pincode
-          <input
-            type="text"
-            value={currentForm.pincode}
-            onChange={(e) => setValue("pincode", e.target.value)}
-            placeholder="560001"
-          />
-        </label>
-      </div>
-
-      <label>
-        Survey Type
-        <select
-          value={currentForm.surveyType}
-          onChange={(e) => setValue("surveyType", e.target.value)}
-        >
-          <option value="parcel">Parcel</option>
-          <option value="plot">Plot</option>
-          <option value="land">Land</option>
-        </select>
-      </label>
-
-      <button type="submit" disabled={loading}>
-        {loading ? "Analyzing..." : "Run Risk Assessment"}
-      </button>
     </form>
   );
 }

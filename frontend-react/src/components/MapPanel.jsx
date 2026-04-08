@@ -1,4 +1,5 @@
-import { MapContainer, Marker, Polygon, TileLayer, Tooltip, useMapEvents } from "react-leaflet";
+import { useEffect } from "react";
+import { MapContainer, Marker, Polygon, TileLayer, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 
 const markerIcon = L.icon({
@@ -46,6 +47,16 @@ function MapClickHandler({ onPickLocation }) {
   return null;
 }
 
+function MapViewportSync({ lat, lng }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.setView([lat, lng], map.getZoom(), { animate: true, duration: 0.7 });
+  }, [lat, lng, map]);
+
+  return null;
+}
+
 export default function MapPanel({ report, input, onPickLocation }) {
   const lat = parseCoordinate(input?.latitude) ?? 12.9716;
   const lng = parseCoordinate(input?.longitude) ?? 77.5946;
@@ -54,10 +65,17 @@ export default function MapPanel({ report, input, onPickLocation }) {
 
   return (
     <div className="card map-card">
-      <h2>Spatial Risk View</h2>
+      <div className="section-head">
+        <div>
+          <p className="section-kicker">Spatial</p>
+          <h2>Spatial Risk View</h2>
+        </div>
+        <span className="coord-chip">{lat.toFixed(6)}, {lng.toFixed(6)}</span>
+      </div>
       <p className="muted">Click anywhere on the map to fill latitude and longitude in the form.</p>
       <MapContainer center={[lat, lng]} zoom={13} className="map">
         <MapClickHandler onPickLocation={onPickLocation} />
+        <MapViewportSync lat={lat} lng={lng} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
